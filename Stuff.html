@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Status Page</title>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+</head>
+<body style="font-family: Arial; padding: 20px;">
+
+  <h2>Status: <span id="status" style="color: green;">Loading...</span></h2>
+  <button onclick="toggleLogin()">Admin Login</button>
+
+  <div id="loginSection" style="display: none; margin-top: 10px;">
+    <input type="password" id="adminPassword" placeholder="Enter admin password">
+    <button onclick="checkPassword()">Submit</button>
+    <div id="adminPanel" style="display: none; margin-top: 10px;">
+      <button onclick="setStatus('Available')" style="background-color: green; color: white;">Set Available</button>
+      <button onclick="setStatus('Unavailable')" style="background-color: red; color: white;">Set Unavailable</button>
+    </div>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCHhN3fzhg8zF8UtKzumiuVP1amnYUs9EE",
+      authDomain: "database-3badc.firebaseapp.com",
+      databaseURL: "https://database-3badc-default-rtdb.firebaseio.com",
+      projectId: "database-3badc",
+      storageBucket: "database-3badc.appspot.com",
+      messagingSenderId: "276877296168",
+      appId: "1:276877296168:web:914d82156ec5d183d66b1d"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // Real-time listener
+    db.ref("status").on("value", (snapshot) => {
+      const newStatus = snapshot.val();
+      const statusEl = document.getElementById("status");
+      statusEl.textContent = newStatus;
+      statusEl.style.color = newStatus === "Available" ? "green" : "red";
+    });
+
+    // Admin controls
+    const correctPassword = "admin123"; // Change this to your actual password
+
+    function toggleLogin() {
+      const section = document.getElementById("loginSection");
+      section.style.display = section.style.display === "none" ? "block" : "none";
+    }
+
+    function checkPassword() {
+      const input = document.getElementById("adminPassword").value;
+      if (input === correctPassword) {
+        document.getElementById("adminPanel").style.display = "block";
+      } else {
+        alert("Wrong password");
+      }
+    }
+
+    function setStatus(newStatus) {
+      db.ref("status").set(newStatus);
+    }
+  </script>
+</body>
+</html>
